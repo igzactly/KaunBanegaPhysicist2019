@@ -1,0 +1,1125 @@
+<style type="text/css">
+    .modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.modal-dialog {
+  position: fixed;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+.modal-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 2px solid #3c7dcf;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.modal-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 50px;
+  padding: 10px;
+  color: #0000ff;
+  border: 0;
+}
+
+.modal-title {
+  font-weight: 300;
+  font-size: 2em;
+  color: #fff;
+  line-height: 30px;
+}
+
+.modal-body {
+  position: absolute;
+  top: 50px;
+  bottom: 60px;
+  width: 100%;
+  font-weight: 300;
+  overflow: auto;
+}
+
+.modal-footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 60px;
+  padding: 10px;
+  background: #f1f3f5;
+}
+
+
+
+
+
+
+</style>
+<body onload="getQuests()" bgcolor="#0000ff">
+<script type="text/javascript">
+    var soundplayed=0;
+    var tenthQuestActive=0;
+    function playFiveSeconds(){
+        var x = document.getElementById("fiveSeconds"); 
+            x.play();
+
+
+    }
+    function playCorrect(){
+         var x = document.getElementById("correctSound"); 
+            x.play();
+
+    }
+    function playWrong(){
+         var x = document.getElementById("wrongSound"); 
+            x.play();
+
+    }
+    function startoptonLock(){
+        var x = document.getElementById("optionLock1"); 
+        x.loop = true; 
+        x.play();
+
+    }
+    function stopoptionLock(){
+        var x = document.getElementById("optionLock1"); 
+         x.pause();
+
+    }
+function startSelected(){
+    var x = document.getElementById("optionLock"); 
+    x.play();
+
+}
+ function playInrto(){
+    var x = document.getElementById("introMusic"); 
+    x.play();
+ }
+ function pauseInrto(){
+    var x = document.getElementById("introMusic"); 
+    x.pause();
+ }
+ function startTicToc(){
+    if(tenthQuestActive==1){
+        startoptonLock();
+    }else{
+    var x = document.getElementById("ticToc");
+    x.loop = true; 
+    x.play();
+}
+
+ }
+
+ function stopTicToc(){
+    var x = document.getElementById("ticToc"); 
+     x.pause(); 
+ }   
+var timestart;
+function counterStart(time){
+var i =parseInt(time);
+var reached120;
+
+if(parseInt(time)==60){
+    reached120=0;
+
+
+}else{
+    reached120=1;
+}
+ function onTimer() {
+   
+  document.getElementById('demo').innerHTML = i;
+  
+
+  i--;
+  if(reached120==0 && i<10 && soundplayed==0){
+    playFiveSeconds();
+    soundplayed=1;
+    
+
+
+  }
+  if(reached120==1 && i<15 && soundplayed==0){
+    playFiveSeconds();
+    soundplayed=1;
+
+  }
+  if (i < 0) {
+    stopTicToc();
+    document.getElementById('demo').innerHTML = 0;
+
+  }
+  else {
+    timestart = setTimeout(onTimer, 1000);
+  }
+}
+onTimer();
+}
+
+function getQuests(){
+    $("#demo").css('visibility','hidden');
+    document.getElementById('demo').innerHTML = 0;
+
+
+    blockPage();
+    var objArray=new Array();
+    var newObj=new Object();
+   
+    
+   objArray.push(newObj);
+  var postdata = JSON.stringify(objArray);
+    
+    var postdata = "Name";
+    var myData=postBack("game/getQuests", "postdata=" + postdata, function(response) {
+        
+        
+        var output = JSON.parse(response);
+        console.log(output);
+        
+        if (output.status == true && output.quest_num<11) {
+            if(output.quest_num==1){
+                $('#entity_modal').modal('show');
+                playInrto();
+            }
+            $('#questionHeader').text(output.quest_num+" ) "+output['quest_array']['quest_name']);
+            $('#option1Button').text('A) '+output['quest_array']['option_1']);
+            $('#option2Button').text('B) '+output['quest_array']['option_2']);
+            $('#option3Button').text('C) '+output['quest_array']['option_3']);
+            $('#option4Button').text('D) '+output['quest_array']['option_4']);
+            $('#correctButton').text(output['quest_array']['correct']);
+            $('#option1Button').val(output['quest_array']['option_1']);
+            $('#option2Button').val(output['quest_array']['option_2']);
+            $('#option3Button').val(output['quest_array']['option_3']);
+            $('#option4Button').val(output['quest_array']['option_4']);
+            $('#correctButton').val(output['quest_array']['correct']);
+            $('#marks').text(parseInt(output.quest_num)*5);
+            $('#score').text(output["score"]);
+            $('#option2Button').css('visibility','hidden');
+            $('#option4Button').css('visibility','hidden');
+            $('#option1Button').css('visibility','hidden');
+            $('#option3Button').css('visibility','hidden');
+            $('#checkButton').css('visibility','hidden');
+            $('#correctButton').css('visibility','hidden');
+            $("#nextButton").hide();
+            $('#filpTheQuestionButton').css('visibility','hidden');
+            $('#fiftyFiftyButton').css('visibility','hidden');
+            $('#chaltaHaiButton1').css('visibility','hidden');
+            $('#chaltaHaiButton2').css('visibility','hidden');
+
+            $("#getOptions").css('visibility','visible');
+             
+            
+           
+
+
+            
+            
+
+           
+            
+        } else {
+
+            showErrorMessage("Game Over ! ");
+            window.location="game/congratulations";
+            
+        }
+    });
+
+
+
+    
+    $("#option1Button").removeClass("btn-danger animation ");
+    $("#option2Button").removeClass("btn-danger animation ");
+    $("#option3Button").removeClass("btn-danger animation ");
+    $("#option4Button").removeClass("btn-danger animation ");
+    cleanUp();
+
+    unblockPage();
+  
+}
+function checkAnswer(checkedValue){
+    stopoptionLock();
+    $("checkButton").text("Next");
+    document.getElementById("checkButton").setAttribute("onclick","nextQuest()");
+    var correct=$('#correctButton').text();
+
+    var opt_1=$('#option1Button').text().slice(3,$('#option1Button').text().length);
+    var opt_2=$('#option2Button').text().slice(3,$('#option2Button').text().length);
+    var opt_3=$('#option3Button').text().slice(3,$('#option3Button').text().length);
+    var opt_4=$('#option4Button').text().slice(3,$('#option4Button').text().length);
+
+    postBack("game/checkAnswer","postdata="+"",function(response){
+        var output = JSON.parse(response);
+        console.log(output);
+        if(output.isCorrect==false){
+            playWrong();
+            if(opt_1==correct){
+                $('#option1Button').css('background','#00ff00');
+                $('#checkButton').css('visibility','hidden');
+            }
+            else if(opt_2==correct){
+                $('#option2Button').css('background','#00ff00');
+                $('#checkButton').css('visibility','hidden');
+            }
+            else if(opt_3==correct){
+                $('#option3Button').css('background','#00ff00');
+                $('#checkButton').css('visibility','hidden');
+
+
+
+
+
+
+
+
+
+
+
+            }
+            else
+            {
+                $('#option4Button').css('background','#00ff00');
+                $('#checkButton').css('visibility','hidden');
+            }
+
+            if(output.chaltaHai1Checked==true && output.chaltaHai1==false){
+                $('#checkButton').css('visibility','hidden');
+
+
+
+            }
+            if(output.chaltaHai2Checked==true && output.chaltaHai2==false){
+                $('#checkButton').css('visibility','hidden');
+
+
+
+            }
+
+
+
+
+            }
+            if(output.chaltaHai1Checked==true && output.chaltaHai1==true){
+                $('#checkButton').css('visibility','visible');
+                $('#checkButton').text('Next');
+                document.getElementById("checkButton").setAttribute('onclick','nextQuest()');
+
+
+
+            }
+            if(output.chaltaHai2Checked==true && output.chaltaHai2==true){
+                $('#checkButton').css('visibility','visible');
+                $('#checkButton').text('Next');
+                document.getElementById("checkButton").setAttribute('onclick','nextQuest()');
+        }
+        if(output.isCorrect==true){
+            playCorrect();
+            if(opt_1==correct){
+                $('#option1Button').css("background","#00ff00");
+                $('#option1Button').css("text","black");
+
+            }
+            else if(opt_2==correct){
+               $('#option2Button').css("background","#00ff00");
+                $('#option2Button').css("text","black");
+            }
+            else if(opt_3==correct){
+               $('#option3Button').css("background","#00ff00");
+                $('#option3Button').css("text","black");
+
+            }
+            else
+            {
+                $('#option4Button').css("background","#00ff00");
+                $('#option4Button').css("text","black");
+            }
+
+
+        }
+       
+    });
+    $('#checkButton').text("Next");
+    document.getElementById("checkButton").setAttribute('onclick','nextQuest()');
+    //$('#nextButton').show();
+
+    
+
+}
+
+function setAnswer(checkedValue,checkedId){
+    startoptonLock();
+    stopTicToc();
+    $("#checkButton").text("Check");
+
+    $('#fiftyFiftyButton').prop('disabled', true);
+    $('#filpTheQuestionButton').prop('disabled', true);
+    $('#chaltaHaiButton1').prop('disabled', true);
+    $('#chaltaHaiButton2').prop('disabled', true);
+
+    $('#checkButton').css('visibility','visible');
+    clearTimeout(timestart);
+    
+    //var data=$("#demo").val();
+    //document.getElementById("demo").innerHTML=data;
+     var objArray = new Array();
+    var newObj = new Object();
+    newObj.selected_option=checkedValue;
+    objArray.push(newObj);
+    var postdata = JSON.stringify(objArray);
+    postBack("game/set_answer", "postdata=" + postdata, function(response) {
+        
+        //console.log(response);
+        var output = JSON.parse(response);
+        console.log(output);
+        
+        
+        
+
+
+});
+        
+        $("#"+checkedId).css("background","yellow");
+        $("#"+checkedId).css("color", "black");
+        if(checkedId=="option1Button"){
+            $("#option2Button").css("background","");
+            $("#option3Button").css("background","");
+            $("#option4Button").css("background","");
+            
+        }
+        else if(checkedId=="option2Button"){
+            $("#option1Button").css("background","");
+            $("#option3Button").css("background","");
+            $("#option4Button").css("background","");
+            
+        }
+        else if(checkedId=="option3Button"){
+            $("#option1Button").css("background","");
+            $("#option2Button").css("background","");
+            $("#option4Button").css("background","");
+            
+        }
+        else if(checkedId=="option4Button"){
+            $("#option1Button").css("background","");
+            $("#option2Button").css("background","");
+            $("#option3Button").css("background","");
+            
+        }
+
+        startSelected();
+
+}
+
+function fiftyFifty(){
+    
+    if($("#option1Button").val()==$("#correctButton").val()){
+        $("#option2Button").css('visibility','hidden');
+        $("#option4Button").css('visibility','hidden');
+    }
+    else if($("#option2Button").val()==$("#correctButton").val()){
+        $("#option3Button").css('visibility','hidden');
+        $("#option4Button").css('visibility','hidden');
+    }
+    else if($("#option3Button").val()==$("#correctButton").val()){
+        $("#option1Button").css('visibility','hidden');
+        $("#option2Button").css('visibility','hidden');
+    }
+    else{
+        $("#option1Button").css('visibility','hidden');
+        $("#option2Button").css('visibility','hidden');
+    }
+    $('#fiftyFiftyButton').css('visibility','hidden');
+     postBack("game/fiftyFifty", "postdata=" + "", function(response) {
+        
+        //console.log(response);
+        var output = JSON.parse(response);
+        console.log(output);
+        
+        
+        
+
+
+});
+     cleanUp();
+
+}
+function flipCheckAnswer(checkedValue){
+    stopoptionLock();
+    var correct=$('#correctButton').text();
+    var opt_1=$('#option1Button').text().slice(3,$('#option1Button').text().length);
+    var opt_2=$('#option2Button').text().slice(3,$('#option2Button').text().length);
+    var opt_3=$('#option3Button').text().slice(3,$('#option3Button').text().length);
+    var opt_4=$('#option4Button').text().slice(3,$('#option4Button').text().length);
+
+    postBack("game/checkAnswer","postdata="+"",function(response){
+        var output = JSON.parse(response);
+        console.log(output);
+        if(output.isCorrect==false || output.isCorrect==true){
+            if(output.isCorrect==true){
+                playCorrect();
+
+            }else{
+                playWrong();
+            }
+            if(opt_1==correct){
+                $('#option1Button').css('background','#00ff00');
+                $('#checkButton').text('Flip');
+                document.getElementById("checkButton").setAttribute('onclick','flipTheQuestion()');
+
+            }
+            else if(opt_2==correct){
+                $('#option2Button').css('background','#00ff00');
+                $('#checkButton').text('Flip');
+                document.getElementById("checkButton").setAttribute('onclick','flipTheQuestion()');
+            }
+            else if(opt_3==correct){
+                $('#option3Button').css('background','#00ff00');
+                $('#checkButton').text('Flip');
+                document.getElementById("checkButton").setAttribute('onclick','flipTheQuestion()');
+
+            }
+            else
+            {
+                $('#option4Button').css('background','#00ff00');
+                $('#checkButton').text('Flip');
+                document.getElementById("checkButton").setAttribute('onclick','flipTheQuestion()');
+            }
+
+            
+
+
+
+
+            }
+            
+
+        
+       
+    });
+    
+    document.getElementById("checkButton").setAttribute('onclick','flipTheQuestion()');
+    
+    
+
+}
+function beforeFlip(checkedValue,checkedId){
+    $('#fiftyFiftyButton').css('visibility', 'hidden');
+    stopTicToc();
+    startoptonLock();
+     $("#checkButton").text("Flip");
+     document.getElementById("checkButton").setAttribute('onclick','flipCheckAnswer()');
+
+     //$('#checkButton').show();
+    clearTimeout(timestart);
+    
+    
+    
+    //var data=$("#demo").val();
+    //document.getElementById("demo").innerHTML=data;
+     var objArray = new Array();
+    var newObj = new Object();
+    newObj.selected_option=checkedValue;
+    objArray.push(newObj);
+    var postdata = JSON.stringify(objArray);
+    postBack("game/set_answer", "postdata=" + postdata, function(response) {
+        
+        //console.log(response);
+        var output = JSON.parse(response);
+        console.log(output);
+        
+        
+        
+
+
+});
+        
+        $("#"+checkedId).css("background","yellow");
+        $("#"+checkedId).css("color", "black");
+        if(checkedId=="option1Button"){
+            $("#option2Button").css("background","");
+            $("#option3Button").css("background","");
+            $("#option4Button").css("background","");
+            
+        }
+        else if(checkedId=="option2Button"){
+            $("#option1Button").css("background","");
+            $("#option3Button").css("background","");
+            $("#option4Button").css("background","");
+            
+        }
+        else if(checkedId=="option3Button"){
+            $("#option1Button").css("background","");
+            $("#option2Button").css("background","");
+            $("#option4Button").css("background","");
+            
+        }
+        else if(checkedId=="option4Button"){
+            $("#option1Button").css("background","");
+            $("#option2Button").css("background","");
+            $("#option3Button").css("background","");
+            
+        }
+
+}
+function checkFlippedAnswer(){
+    startoptonLock();
+    $("#checkButton").text('Next');
+    document.getElementById("checkButton").setAttribute('onclick','nextQuest()');
+
+
+       $("checkButton").text("Next");
+    document.getElementById("checkButton").setAttribute("onclick","nextQuest()");
+    var correct=$('#correctButton').text();
+
+    var opt_1=$('#option1Button').text().slice(3,$('#option1Button').text().length);
+    var opt_2=$('#option2Button').text().slice(3,$('#option2Button').text().length);
+    var opt_3=$('#option3Button').text().slice(3,$('#option3Button').text().length);
+    var opt_4=$('#option4Button').text().slice(3,$('#option4Button').text().length);
+
+    postBack("game/checkAnswer","postdata="+"",function(response){
+        var output = JSON.parse(response);
+        console.log(output);
+        if(output.isCorrect==false){
+            $("#checkButton").css('visibility','hidden');
+            if(opt_1==correct){
+                $('#option1Button').css('background','#00ff00');
+                $('#checkButton').css('visibility','hidden');
+            }
+            else if(opt_2==correct){
+                $('#option2Button').css('background','#00ff00');
+                $('#checkButton').css('visibility','hidden');
+            }
+            else if(opt_3==correct){
+                $('#option3Button').css('background','#00ff00');
+                $('#checkButton').css('visibility','hidden');
+            }
+            else
+            {
+                $('#option4Button').css('background','#00ff00');
+                $('#checkButton').css('visibility','hidden');
+
+            }
+            }
+            
+        if(output.isCorrect==true){
+            if(opt_1==correct){
+                $('#option1Button').css("background","#00ff00");
+                $('#option1Button').css("text","black");
+
+            }
+            else if(opt_2==correct){
+               $('#option2Button').css("background","#00ff00");
+                $('#option2Button').css("text","black");
+            }
+            else if(opt_3==correct){
+               $('#option3Button').css("background","#00ff00");
+                $('#option3Button').css("text","black");
+
+            }
+            else
+            {
+                $('#option4Button').css("background","#00ff00");
+                $('#option4Button').css("text","black");
+            }
+
+
+        }
+       
+    });
+    $('#checkButton').text("Next");
+    document.getElementById("checkButton").setAttribute('onclick','nextQuest()');
+    //$('#nextButton').show();
+
+
+}
+function flipTheQuestion(){
+    $("#filpTheQuestionButton").hide();
+    $("#checkButton").text('Check');
+    document.getElementById("checkButton").setAttribute('onclick','checkFlippedAnswer()');
+    clearTimeout(timestart);
+    $("#demo").css('visibility','hidden');
+    
+    var x = Math.floor((Math.random() * 4) + 1);
+    var objArray=new Array();
+    var newObj=new Object();
+   
+    objArray.set_id=x;
+   objArray.push(newObj);
+    var postdata = JSON.stringify(objArray);
+    
+    //var postdata = "Name";
+    var myData=postBack("game/getFlippedQuest", "postdata=" + postdata, function(response) {
+        
+        //console.log(response);
+        var output = JSON.parse(response);
+        console.log(output);
+        
+        if (output.status == true ) {
+
+            
+            console.log(output['quest_array']['quest_name']);
+            $('#questionHeader').text(output.quest_num+" ) "+output['quest_array']['quest_name']);
+            $('#option1Button').text('A) '+output['quest_array']['option_1']);
+            $('#option2Button').text('B) '+output['quest_array']['option_2']);
+            $('#option3Button').text('C) '+output['quest_array']['option_3']);
+            $('#option4Button').text('D) '+output['quest_array']['option_4']);
+            $('#correctButton').text(output['quest_array']['correct']);
+            $('#option1Button').val(output['quest_array']['option_1']);
+            $('#option2Button').val(output['quest_array']['option_2']);
+            $('#option3Button').val(output['quest_array']['option_3']);
+            $('#option4Button').val(output['quest_array']['option_4']);
+            $('#correctButton').val(output['quest_array']['correct']);
+            $('#ScoreTB').text(output['quest_array']['score']);
+            $('#option2Button').css('visibility','hidden');
+            $('#option4Button').css('visibility','hidden');
+            $('#option1Button').css('visibility','hidden');
+            $('#option3Button').css('visibility','hidden');
+            $('#checkButton').css('visibility','hidden');
+            $("#getOptions").css('visibility','visible'); 
+            //$("#nextButton").hide();
+
+
+
+
+
+
+
+            
+            
+
+           
+            
+        } else {
+            showErrorMessage("Cant Flip The Question ");
+            
+            
+        }
+    });
+    $('#filpTheQuestionButton').css('visibility','hidden');
+    cleanUp();
+
+
+}
+function getOptions(){
+    soundplayed=0;
+    $("checkButton").text("Check");
+    $('#fiftyFiftyButton').prop('disabled', false);
+    $('#filpTheQuestionButton').prop('disabled', false);
+    $('#chaltaHaiButton1').prop('disabled', false);
+    //$('#chaltaHaiButton2').prop('disabled', false);
+    $("#demo").css('visibility','visible');
+    var postdata="";
+    $('#option2Button').css('visibility','visible');
+    $('#option4Button').css('visibility','visible');
+    $('#option1Button').css('visibility','visible');
+    $('#option3Button').css('visibility','visible');
+    $('#getOptions').css('visibility','hidden');
+    
+    postBack("game/checkLifeLines", "postdata=" + postdata, function(response) {
+        var output = JSON.parse(response);
+        if(output.quest_num<6){
+            counterStart(60);
+            if(output.fiftyFifty==true){
+                $('#fiftyFiftyButton').css('visibility','hidden');
+            }else{
+                $('#fiftyFiftyButton').css('visibility','visible');
+            }
+            if(output.chaltaHai1==true){
+                $('#chaltaHaiButton1').css('visibility','hidden');
+                
+            }
+            else{
+                $('#chaltaHaiButton1').css('visibility','visible');
+
+            }
+            if(output.chaltaHai2==true){
+                $('#chaltaHaiButton1').css('visibility','hidden');
+            }
+            else{
+                $('#chaltaHaiButton1').css('visibility','visible');
+            }
+        }else{
+            counterStart(120);
+            $('#chaltaHaiButton1').css('visibility','hidden');
+            $('#chaltaHaiButton1').css('visibility','hidden');
+            if(output.flipped==true){
+                $('#filpTheQuestionButton').css('visibility','hidden');
+            }else{
+                $('#filpTheQuestionButton').css('visibility','visible');
+
+            }
+            if(output.fiftyFifty==true){
+                $('#fiftyFiftyButton').css('visibility','hidden');
+            }else{
+                $('#fiftyFiftyButton').css('visibility','visible');
+        }
+    }
+    
+    if(output.quest_num==10){
+        stopTicToc();
+        $("#demo").css('visibility','hidden');
+        startoptonLock();
+    }
+
+
+    });
+    startTicToc();
+    
+
+    
+    
+}
+function chaltaHai1(){
+    
+    var postdata="";
+    postBack("game/setchaltaHai1", "postdata=" + postdata, function(response) {
+        
+        var output = JSON.parse(response);
+        console.log(output);
+        if(output.status==true){
+            $('#chaltaHaiButton1').text("Chalta Hai 2");
+            $("#chaltaHaiButton1").css("color","red");
+            
+            
+
+            
+
+        }else{
+            alert("Something Went wrong !");
+
+        }
+    });
+    document.getElementById("chaltaHaiButton1").setAttribute("onclick","chaltaHai2()");
+
+}
+function chaltaHai2(){
+    
+    var postdata="";
+    postBack("game/setchaltaHai2", "postdata=" + postdata, function(response) {
+        
+        
+        var output = JSON.parse(response);
+        console.log(output);
+        if(output.status==true){
+            $('#chaltaHaiButton1').css('visibility','hidden');
+        
+
+            
+
+        }else{
+            alert("Something Went wrong !");
+
+        }
+    });
+
+}
+function nextQuest(){
+    stopTicToc();
+    document.getElementById("checkButton").setAttribute('onclick','checkAnswer()');
+    var nextQuest=$("#checkButton").text();
+    if(nextQuest=="Game Over"){
+        $('#checkButton').css('visibility','hidden');
+    }else{
+        getQuests(); 
+        cleanUp();
+
+    }
+    
+    
+        
+          
+
+}
+
+function cleanUp(){
+            $("#option1Button").removeClass("btn-danger");
+            $("#option2Button").removeClass("btn-danger");
+            $("#option3Button").removeClass("btn-danger");
+            $("#option4Button").removeClass("btn-danger");
+            $('#option1Button').removeClass("btn-success");
+            $('#option2Button').removeClass("btn-success");
+            $('#option3Button').removeClass("btn-success");
+            $('#option4Button').removeClass("btn-success");
+            $("#option1Button").css("background","white");
+            $("#option2Button").css("background","white");
+            $("#option3Button").css("background","white");
+            $("#option4Button").css("background","white");
+            $("#option1Button").css("color","#000000");
+            $("#option2Button").css("color","#000000");
+            $("#option3Button").css("color","#000000");
+            $("#option4Button").css("color","#000000");
+
+}
+
+
+
+
+</script>
+<div id="entity_modal" class="modal fade" data-backdrop="static" data-keyboard="false" style=" width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;">
+               <div class="modal-dialog modal-lg">
+                  <div class="modal-content" style="height: auto;
+  min-height: 100%;
+  border-radius: 0;">
+                     
+                     <div class="modal-body">
+<!--[if gte vml 1]><v:shapetype
+ id="_x0000_t75" coordsize="21600,21600" o:spt="75" o:preferrelative="t"
+ path="m@4@5l@4@11@9@11@9@5xe" filled="f" stroked="f">
+ <v:stroke joinstyle="miter"/>
+ <v:formulas>
+  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+  <v:f eqn="sum @0 1 0"/>
+  <v:f eqn="sum 0 0 @1"/>
+  <v:f eqn="prod @2 1 2"/>
+  <v:f eqn="prod @3 21600 pixelWidth"/>
+  <v:f eqn="prod @3 21600 pixelHeight"/>
+  <v:f eqn="sum @0 0 1"/>
+  <v:f eqn="prod @6 1 2"/>
+  <v:f eqn="prod @7 21600 pixelWidth"/>
+  <v:f eqn="sum @8 21600 0"/>
+  <v:f eqn="prod @7 21600 pixelHeight"/>
+  <v:f eqn="sum @10 21600 0"/>
+ </v:formulas>
+ <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+ <o:lock v:ext="edit" aspectratio="t"/>
+</v:shapetype><v:shape id="Picture_x0020_1" o:spid="_x0000_i1025" type="#_x0000_t75"
+ style='width:71pt;height:89.5pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Rules%20of%20the%20Game_files/image001.jpg" o:title=""/>
+</v:shape><![endif]--><![if !vml]><center><img width="12%" height="12%" src="http://localhost/kaunBanegaPhysicist/assets/images/Logo.jpg" v:shapes="Picture_x0020_1"></center><![endif]></span>
+<p class=MsoNormal align=center style='text-align:center;line-height:140%'><b style='mso-bidi-font-weight:normal'><span style='font-size:30.0pt;line-height: 100%;font-family:"Arial",sans-serif;color:red'>Rules of the Game<span
+style='mso-spacerun:yes'>  </span></span></b><span style='mso-no-proof:yes'>
+<b
+style='mso-bidi-font-weight:normal'><span style='font-size:30.0pt;line-height: 100%;font-family:"Arial",sans-serif'><o:p></o:p></span></b></p>
+                        
+<p class=MsoNormal style='line-height:140%'><b style='mso-bidi-font-weight: normal'><span style='font-size:22.0pt; line-height:150%;font-family:"Arial", sans-serif; color:blue'> In all, 10 Questions<o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='line-height:140%'><b style='mso-bidi-font-weight: normal'><span style='font-size:22.0pt;line-height:140%; font-family:"Arial", sans-serif; color:blue'>5 points for first question and increment by 5 points for every next question <o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='line-height:150%'><b style='mso-bidi-font-weight: normal'><span style='font-size:22.0pt;line-height:140%; font-family:"Arial", sans-serif; color:blue'>Timer: 60 seconds each for first 5 questions and 120 seconds each
+for the next 4 <o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='line-height:150%'><b style='mso-bidi-font-weight: normal'><span style='font-size:22.0pt;line-height:140%; font-family:"Arial", sans-serif; color:blue'>No timer for 10th question <o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='line-height:150%'><b style='mso-bidi-font-weight: normal'><span style='font-size:22.0pt;line-height:140%; font-family:"Arial", sans-serif; color:blue'>Three lifelines: Chalta Hai, 50-50 and Flip the Question <o:p></o:p></span></b></p>
+
+<!--<p class=MsoNormal style='line-height:150%'><b style='mso-bidi-font-weight: normal'><span style='font-size:22.0pt;line-height:140%;font-family:"Arial", sans-serif; color:blue'>Three lifelines: <span class=SpellE>Chalta</span> Hai, 50-50 and Flip the Question <o:p></o:p></span></b></p>-->
+
+<p class=MsoNormal style='line-height:150%'><b style='mso-bidi-font-weight: normal'><span style='font-size:22.0pt;line-height:140%; font-family:"Arial", sans-serif; color:blue'>Chalta Hai can be used twice and becomes inactive 6th question onwards <o:p></o:p></span></b></p>
+
+
+<p class=MsoNormal style='line-height:150%'><b style='mso-bidi-font-weight: normal'><span style='font-size:22.0pt;line-height:140%;font-family:"Arial", sans-serif; color:blue'>Flip the Question becomes active 6th question onwards <o:p></o:p></span></b></p>
+
+<center ><h3>
+<button onclick="closeEntityModal()">Play</button></h3></center>
+                         
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <
+<div class="container"> 
+    
+<div class="row">
+    <b>
+<div class="col-lg-4">   
+<h2 style="font-family: Arial Black; font-size: 36px; color:  #000000; font-weight: bold;">Team  <?php  if($this->session->userdata('team_name')){
+                    echo $this->session->userdata('team_name');
+                    
+                    }
+                    
+                    
+                    else{
+                        header("location: ". base_url()."game");
+                        }
+                        ?> 
+                    </h2>
+</div>
+
+<div class="col-lg-2">
+    <center>
+    <h1 id="demo" style="font-family: Arial Black; font-size: 36px; color:  #ff0000; font-weight: bold;">
+        Score <score id="score;"></h1>
+</center>
+</div>
+
+<div class="col-lg-3">
+    <h1 style="font-family: Arial Black; font-size: 36px; color:  #ec17dc; font-weight: bold;">
+        Score <score id="score">0</score>
+    </h1>
+    
+</div>
+
+<div class="col-lg-3">
+    <h1 style="font-family: Arial Black; font-size: 36px; color:  #ec17dc; font-weight: bold;">
+        Points <marks id="marks">0</marks>
+    </h1>
+    
+</div>
+</b>
+</div>
+
+<div class="row">
+<div class="col-lg-12">
+<h2  id="questionHeader" style="font-family: Arial Black; font-size: 36px; color:  #0000ff; font-weight: bold;">The Question Goes Here !</h2>
+</div>           
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <button  id="option1Button" style="height: 40%;width: 100%;color: #000000;font-weight: bold; font-family: Arial; font-size: 24px" onclick="setAnswer(this.value,this.id)" >Option 1</button>
+    </div>
+
+    <div class="col-lg-4">
+        
+    </div>
+    <div class="col-lg-4">
+         <button  id="option2Button" style="height: 40%;width: 100%;color:  #000000;font-size: 24px; font-weight: bold;"  onclick="setAnswer(this.value,this.id)" >Option 3</button>
+        
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        
+    </div>
+    <div class="col-lg-4">
+      <center><img src="http://localhost/kaunBanegaPhysicist/assets/images/Logo.jpg" class="img-responsive" width="200" height="150"></center>
+    </div>
+    <div class="col-lg-4">         
+        
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-4">
+        <button  id="option3Button" style="height: 40%;width: 100%;color: #000000; font-weight: bold; font-family: Arial; font-size: 24px" onclick="setAnswer(this.value,this.id)" >Option 3</button>
+    </div>
+
+    <div class="col-sm-4">
+        <button  id="getOptions" onclick="getOptions()" style="font-size:20px; font-weight: bold; height: 40%; width: 50%;  font-family: Arial; font-size: 20; margin-top: 10px; margin-left: 100px;">  Options  </button>
+       <br>
+        
+        
+    </div>
+
+    <div class="col-sm-4">
+         <button  id="option4Button" style="white-space: normal;height: 40%;width: 100%;color: #000000; font-family: Arial; font-weight: bold; font-size: 24px" onclick="setAnswer(this.value,this.id)" >Option 4</button>
+        
+    </div>
+</div>
+
+    
+        
+        
+        
+        
+    
+<div class="row">
+    <div class="col-lg-4">
+        
+    </div>
+    <div class="col-lg-4"><center>
+
+        <button   id="checkButton" onclick="checkAnswer()" style="font-size:20px;white-space: normal;height: 40%;width: 50%;color:  #000000;float:left;margin-left:100px;margin-top: 20px;margin-left: 100px;">Check </button>
+</center>
+    
+    </div>
+    <div class="col-lg-4">
+        
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-4">
+
+        <button  id="filpTheQuestionButton" style="float:left;color:  #0000ff;margin-top: 20px;font-size: 24px;"  onclick="beforeFlip(this.value,this.id)">Flip The Question</button>
+         
+        
+
+
+    
+
+   
+
+       
+      
+    </div>
+   <div class="col-lg-4">
+    
+        <button   id="fiftyFiftyButton" style="float:left;color:  #0000ff;margin-left:30px;margin-top: 20px;font-size: 24px; font-style: italic;" onclick="fiftyFifty()">50 - 50 </button>
+   </div>
+    
+    <div class="col-lg-4">
+        <button   id="chaltaHaiButton1" style="width: 70%;color:  #0000ff;margin-left:150px;float:left;margin-top: 20px;font-size: 24px; font-style: italic;"  onclick="chaltaHai1()">Chalta Hai 1</button>
+
+    </div>
+ 
+</div>
+</div>
+
+
+
+
+
+ 
+
+    <button type="button" id="correctButton"   style="width: 25em;  height: 6em;margin-left: 375px;" data-animation="bounce"><h2>Correct</h2></button>
+<audio id="introMusic">
+  <source src="http://localhost/kaunBanegaPhysicist/assets/sounds/intro.mp3" type="audio/ogg">
+  
+  
+</audio>
+
+<audio id="ticToc">
+  <source src="http://localhost/kaunBanegaPhysicist/assets/sounds/ticktock.mp3" type="audio/ogg">
+  
+  
+</audio>
+
+<audio id="optionLock">
+  <source src="http://localhost/kaunBanegaPhysicist/assets/sounds/optionLock.mp3" type="audio/ogg">
+  
+  
+</audio>
+
+<audio id="optionLock1">
+  <source src="http://localhost/kaunBanegaPhysicist/assets/sounds/500000_question.mp3" type="audio/ogg">
+  
+  
+</audio>
+
+<audio id="correctSound">
+  <source src="http://localhost/kaunBanegaPhysicist/assets/sounds/correct.mp3" type="audio/ogg">
+  
+  
+</audio>
+
+<audio id="wrongSound">
+  <source src="http://localhost/kaunBanegaPhysicist/assets/sounds/wrong.mp3" type="audio/ogg">
+  
+  
+</audio>
+<audio id="fiveSeconds">
+  <source src="http://localhost/kaunBanegaPhysicist/assets/sounds/fiveSeconds.mp3" type="audio/ogg">
+  
+  
+</audio>
+<!-- Inside style specify font !>
